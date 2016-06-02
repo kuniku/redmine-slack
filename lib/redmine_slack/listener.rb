@@ -82,7 +82,20 @@ private
 	end
 
 	def object_url(obj)
-		Rails.application.routes.url_for(obj.event_url({:host => Setting.host_name, :protocol => Setting.protocol}))
+		if Setting.host_name.to_s =~ /\A(https?\:\/\/)?(.+?)(\:(\d+))?(\/.+)?\z/i
+             		host, port, prefix = $2, $4, $5
+             		Rails.application.routes.url_for(obj.event_url({
+                		 :host => host,
+                		 :protocol => Setting.protocol,
+                		 :port => port,
+                		 :script_name => prefix
+             		}))
+         	else
+             		Rails.application.routes.url_for(obj.event_url({
+                 		:host => Setting.host_name,
+                 		:protocol => Setting.protocol
+             		}))
+         	end
 	end
 
 	def url_for_project(proj)
